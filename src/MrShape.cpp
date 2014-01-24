@@ -46,56 +46,94 @@ MrShape::MrShape():M_g2l(1),M_l2g(1){
 	printf("Created shape#%d\n",id);
 }
 //---------------------------------------
+MrShape::MrShape(Vec3 scl,Vec3 ang,Vec3 pos)
+:M_g2l(1),M_l2g(1)
+{
+	id=MaxId++;
+	printf("Created shape#%d\n",id);
+	UpdateM(pos,ang,scl);
+}
+//---------------------------------------
 MrShape::~MrShape(){
 	printf("Delete shape#%d\n",id);
 }
 //---------------------------------------
-void MrShape::UpdMatrix(){
-	M_l2g=Matr(1); M_g2l=Matr(1);
-
+void MrShape::InitM(){
+	M_g2l=Matr(1);
+	M_l2g=M_g2l;
+}
+//---------------------------------------
+void MrShape::TranslateM(const Vec3 &shift){
+	//apply translation	
+	Matr M_pos=glm::translate(Matr(1),shift);
+	M_l2g=M_pos*M_l2g;
+	M_pos[3][0]=-M_pos[3][0];
+	M_pos[3][1]=-M_pos[3][1];
+	M_pos[3][2]=-M_pos[3][2];
+	M_g2l=M_g2l*M_pos;
+} 
+//---------------------------------------
+void MrShape::ScaleM(const Vec3 &scale){//apply scaling
+	Matr M_scl=glm::scale (Matr(1),scale);
+	M_l2g=M_scl*M_l2g;
+	M_scl[0][0]=1./M_scl[0][0];
+	M_scl[1][1]=1./M_scl[1][1];
+	M_scl[2][2]=1./M_scl[2][2];
+	M_l2g=M_l2g*M_scl;
+}
+//---------------------------------------
+void MrShape::RotateM(float angle,const Vec3 &axis){
+	Matr M_rot=glm::rotate(Matr(1),angle,axis);
+	M_l2g=M_rot*M_l2g;
+	M_rot=glm::transpose(M_rot);
+	M_g2l=M_g2l*M_rot;
+}
+//---------------------------------------
+void MrShape::UpdateM(const Vec3 &pos,const Vec3 &ang,const Vec3 &scl){
 	Matr M_scl(1),M_rot(1),M_pos(1);
 
 	M_scl=glm::scale (M_scl,scl);
-	M_rot=glm::rotate(M_rot,ang[0],Vec3(1,0,0));
+	M_rot=glm::rotate(M_rot,ang[1],Vec3(0,1,0));
 	M_rot=glm::rotate(M_rot,ang[1],Vec3(0,1,0));
 	M_rot=glm::rotate(M_rot,ang[2],Vec3(0,0,1));
 	M_pos=glm::translate(M_pos,pos);
 	M_l2g=M_pos*M_rot*M_scl;
-
+	/*cout<<"scl="<<scl<<endl;
+	cout<<M_scl<<endl;
+	cout<<"rot="<<ang<<endl;
+	cout<<M_rot<<endl;
+	cout<<"pos="<<pos<<endl;
+	cout<<M_pos<<endl;*/
 	// update inverse matrix
 	M_rot=glm::transpose(M_rot);
 	for(int n=0;n<3;++n){
 		M_scl[n][n]=1./M_scl[n][n];
 		M_pos[3][n]=-M_pos[3][n];
 	}
-	M_g2l=M_scl*M_rot*M_pos;
+	M_g2l=M_scl*M_rot*M_pos*M_g2l;
 }
 //---------------------------------------
 void MrShape::Print(){
+	cout<<"Mr."<<this->ShapeType()<<" says:"<<"\"How do you do?\""<<endl;
 	cout<<M_g2l<<endl;
-	MrObject::Print();
 }
 //---------------------------------------
-/*bool MrShape::Chk_crude_sph_LOC(Vect v){
-	return (v[0]*v[0]+v[1]*v[1]+v[2]*v[2]<1.0);
-};
-*/
+
 //====================================================
 //            Mr BOX class:
 //====================================================
 void MrBox::Print(){
-	cout<<"Mr.Box says: \"How do you do?\" "<<endl;
 	MrShape::Print();
 }
 //---------------------------------------
 double MrBox::Volume_LOC(){return 8.0;}
 //---------------------------------------
 bool   MrBox::IsInside_LOC(Vect v){return (fabs(v[0])<=1.0 && fabs(v[1])<=1.0 && fabs(v[2])<=1.0);}
+//---------------------------------------
 //====================================================
 //            MrsPhere class:
 //====================================================
 void MrSphere::Print(){
-	cout<<"Mrs.Phere says: \"How do you do?\" "<<endl;
 	MrShape::Print();
 }
 //---------------------------------------

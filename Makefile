@@ -1,5 +1,6 @@
 CC = g++
 CFLAGS=-Wall -std=c++0x -g
+CFLAGS+=-O3
 LDFLAGS=
 # ROOT_LIBS = `root-config --libs`
 # ROOT_INCLUDE  =  `root-config --incdir`

@@ -9,8 +9,8 @@
 
 using namespace std;
 
-#include <glm/gtc/random.hpp> 
-
+//#include <glm/gtc/random.hpp> 
+float  frand(float a, float b){return (rand()*1.0f/RAND_MAX)*(b-a)+a; }
 class shape_test
 {
 public:
@@ -47,58 +47,23 @@ bool shape_test::TestMC(){
 	
 	//MrBox test_obj=MrBox();
 	//рисуем зайчика
-	//тело:
-	test_obj[0]=new MrSphere();
-	test_obj[0]->Scl()=Vec3(20,10,10);
-	test_obj[0]->Pos()=Vec3(0,0,0);
-	test_obj[0]->Ang()=Vec3(0,0,0);
-	//голова
-	test_obj[1]=new MrSphere();
-	test_obj[1]->Scl()=Vec3(8,8,8);
-	test_obj[1]->Pos()=Vec3(15,0,8);
-	test_obj[1]->Ang()=Vec3(0,0,0);
-	//ушко левое
-	test_obj[2]=new MrBox();
-	test_obj[2]->Scl()=Vec3(2,4,12);
-	test_obj[2]->Pos()=Vec3(15,-6,16);
-	test_obj[2]->Ang()=Vec3(15,5,0);
-	//ушко правое
-	test_obj[3]=new MrBox();
-	test_obj[3]->Scl()=Vec3(2,4,12);
-	test_obj[3]->Pos()=Vec3(15,6,16);
-	test_obj[3]->Ang()=Vec3(-15,5,0);
-	//хвостик
-	test_obj[4]=new MrSphere();
-	test_obj[4]->Scl()=Vec3(5,5,5);
-	test_obj[4]->Pos()=Vec3(-17,0,7);
-	test_obj[4]->Ang()=Vec3(0,0,0);
-	//лапка левая передняя
-	test_obj[5]=new MrBox();
-	test_obj[5]->Scl()=Vec3(3,3,10);
-	test_obj[5]->Pos()=Vec3(12,-6,-8);
-	test_obj[5]->Ang()=Vec3(0,0,0);
-	//лапка правая передняя
-	test_obj[6]=new MrBox();
-	test_obj[6]->Scl()=Vec3(3,3,10);
-	test_obj[6]->Pos()=Vec3(12,6,-8);
-	test_obj[6]->Ang()=Vec3(0,0,0);
-	//лапка левая задняя
-	test_obj[7]=new MrBox();
-	test_obj[7]->Scl()=Vec3(3,3,10);
-	test_obj[7]->Pos()=Vec3(-12,-6,-8);
-	test_obj[7]->Ang()=Vec3(0,0,0);
-	//лапка правая задняя
-	test_obj[8]=new MrBox();
-	test_obj[8]->Scl()=Vec3(3,3,10);
-	test_obj[8]->Pos()=Vec3(-12,6,-8);
-	test_obj[8]->Ang()=Vec3(0,0,0);
-	for(uint n=0;n<test_obj.size();++n)
-		test_obj[n]->UpdMatrix();
+	test_obj[0]=new MrSphere(Vec3(20,10,10), Vec3(  0, 0, 0) ,Vec3(0,0,0)	);	//cout<<"тело "<<endl;
+	test_obj[1]=new MrSphere(Vec3(8,8,8),    Vec3(  0, 0, 0) ,Vec3(15,0,8) 	); 	//cout<<"голова  "<<endl;
+	test_obj[2]=new MrBox	(Vec3(2,4,12),   Vec3( 15, 5, 0) ,Vec3( 15,-6,16) );//cout<<"ушко левое  "<<endl;
+	test_obj[3]=new MrBox	(Vec3(2,4,12),   Vec3(-15, 5, 0) ,Vec3( 15, 6,16) );//cout<<"ушко правое  "<<endl;
+	test_obj[4]=new MrSphere(Vec3(5,5,5 ),   Vec3(  0, 0, 0) ,Vec3(-17, 0, 7) );//cout<<"хвостик  "<<endl;
+	test_obj[5]=new MrBox	(Vec3(3,3,10),   Vec3(  0, 0, 0) ,Vec3( 12,-6,-8) );//cout<<"лапка левая передняя  "<<endl;
+	test_obj[6]=new MrBox	(Vec3(3,3,10),   Vec3(  0, 0, 0) ,Vec3( 12, 6,-8) );//cout<<"лапка правая передняя  "<<endl;
+	test_obj[7]=new MrBox	(Vec3(3,3,10),   Vec3(  0, 0, 0) ,Vec3(-12,-6,-8) );//cout<<"лапка левая задняя  "<<endl;
+	test_obj[8]=new MrBox	(Vec3(3,3,10),   Vec3(  0, 0, 0) ,Vec3(-12, 6,-8) );//cout<<"лапка правая задняя  "<<endl;
+
+	for(uint n=0;n<test_obj.size();++n)	test_obj[n]->Print();
+	//for(uint n=0;n<test_obj.size();++n)	test_obj[n]->UpdMatrix();
 	
 
 	//make a small MC to determine a volume
 	const int Npoints=100000;
-	const double lim=30;
+	const float lim=30;
 	Vect p(1);
 	int nhits=0;
 	//open file for points
@@ -107,9 +72,9 @@ bool shape_test::TestMC(){
 	//----------------------------------
 	for(int n=0;n<Npoints;++n){
 		//generate point
-		p[0]=glm::linearRand(-lim,lim);
-		p[1]=glm::linearRand(-lim,lim);
-		p[2]=glm::linearRand(-lim,lim);
+		p[0]=frand(-lim,lim);
+		p[1]=frand(-lim,lim);
+		p[2]=frand(-lim,lim);
 		p[3]=1;
 		for(uint n=0;n<test_obj.size();++n)
 			if(test_obj[n]->IsInside(p)){
@@ -150,11 +115,11 @@ bool shape_test::TestMC(){
 //--------------------------------------------------------
 bool shape_test::TestUnit(){
 	cout<<"================== start UNITARITY TEST ============"<<endl;
-	MrShape obj;
-	obj.Scl()=Vec3(glm::linearRand(0.01,100.0),glm::linearRand(0.01,100.0),glm::linearRand(0.01,100.0));
-	obj.Ang()=Vec3(glm::linearRand(0.,360.),glm::linearRand(0.,180.),glm::linearRand(0.,360.));
-	obj.Pos()=Vec3(glm::linearRand(-100.,100.),glm::linearRand(-100.,100.),glm::linearRand(-100.,100.));
-	obj.UpdMatrix();
+	
+	Vec3 scl=Vec3(frand(0.01,100.0),frand(0.01,100.0),	frand(0.01,100.0));
+	Vec3 ang=Vec3(frand(0.,360.),	frand(0.,180.),		frand(0.,360.));
+	Vec3 pos=Vec3(frand(-100.,100.),frand(-100.,100.),	frand(-100.,100.));
+	MrShape obj(scl,ang,pos);
 	obj.Print();
 	Matr M1=obj.M_g2l*obj.M_l2g;
 	Matr I(1);
