@@ -17,7 +17,14 @@ typedef glm::mat4 Matr;
 inline void RotateM(Matr M,float ang,Vec3 axis){M=glm::rotate(M,ang,axis);}
 inline void ScaleM (Matr M, Vec3 scl){M=glm::scale (M,scl);}
 inline void TranslateM(Matr M,Vec3 shift){M=glm::translate(M,shift);}
-inline float TraceM(Matr M){return M[0][0]*M[1][1]*M[2][2]*M[3][3];}
+inline float DeterM3(Matr M){
+	return 	 M[0][0]*M[1][1]*M[2][2]
+			+M[0][1]*M[1][2]*M[2][0]
+			+M[0][2]*M[1][0]*M[2][1]
+			-M[0][0]*M[1][2]*M[2][1]
+			-M[0][1]*M[1][0]*M[2][2]
+			-M[0][2]*M[1][1]*M[2][0];
+}
 
 std::ostream& operator<<(std::ostream& out, const Vec3& v); // output
 std::ostream& operator<<(std::ostream& out, const Vect& v); // output
@@ -59,8 +66,8 @@ public:
 	
 	MrShape();
 	MrShape(const MrObject &o);
-	MrShape(Vec3  scl,Vec3  ang,Vec3  pos);
-	//MrShape(Vec3& pos,Vec3& ang,Vec3& scl);
+	// MrShape(Vec3  scl,Vec3  ang,Vec3  pos);
+	MrShape(const Vec3& scl,const Vec3& ang,const Vec3& pos);
 	virtual ~MrShape();
 
 	//changing transformation matrices
@@ -69,7 +76,7 @@ public:
 	void TranslateM(const Vec3& shift); //apply translation
 	void ScaleM(const Vec3& scale); //apply scaling
 	//apply scaling,rotation and shift
-	void UpdateM(const Vec3& pos,const Vec3& ang,const Vec3& scl);
+	void UpdateM(const Vec3& scl,const Vec3& ang,const Vec3& pos);
 	void UpdateM(MrObject &o){UpdateM(o.Pos(),o.Ang(),o.Scl());}
 	// transformations
 	inline Vect l2g(const Vect& v){return M_l2g*v;}
@@ -87,7 +94,7 @@ public:
 	virtual bool IsInside_LOC(Vect v){return false;}
 	//virtual Intersect_LOC();
 	//global frame calculations
-	double Volume(){return Volume_LOC()*TraceM(M_l2g);;}
+	double Volume(){return Volume_LOC()*DeterM3(M_l2g);}
 	bool IsInside(Vect v){return IsInside_LOC(g2l(v));}
 	
 
@@ -102,8 +109,8 @@ class MrBox:public MrShape
 public:
 	MrBox():MrShape(){};
 	MrBox(const MrObject &o):MrShape(o){std::cout<<"Created "<<ShapeType()<<std::endl;};
-	MrBox(Vec3  scl,Vec3  ang,Vec3  pos):MrShape(scl,ang,pos){std::cout<<"Created "<<ShapeType()<<std::endl;};
-	//MrBox(Vec3& pos,Vec3& ang,Vec3& scl):MrShape(scl,ang,pos){};
+	// MrBox(Vec3  scl,Vec3  ang,Vec3  pos):MrShape(scl,ang,pos){std::cout<<"Created "<<ShapeType()<<std::endl;};
+	MrBox(const Vec3& scl,const Vec3& ang,const Vec3& pos):MrShape(scl,ang,pos){std::cout<<"Created "<<ShapeType()<<std::endl;};
 	//some virtual functions: 
 	virtual const char *ShapeType(){return "Box";}
 	//for output
@@ -118,8 +125,8 @@ class MrSphere:public MrShape
 public:
 	MrSphere():MrShape(){};
 	MrSphere(const MrObject &o):MrShape(o){};
-	MrSphere(Vec3  scl,Vec3  ang,Vec3  pos):MrShape(scl,ang,pos){};
-	//MrSphere(Vec3& pos,Vec3& ang,Vec3& scl):MrShape(scl,ang,pos){};
+	// MrSphere(Vec3  scl,Vec3  ang,Vec3  pos):MrShape(scl,ang,pos){};
+	MrSphere(const Vec3& scl,const Vec3& ang,const Vec3& pos):MrShape(scl,ang,pos){std::cout<<"Created "<<ShapeType()<<std::endl;};
 	//some virtual functions: 
 	virtual const char* ShapeType(){return "Sphere";}
 	//for output
@@ -128,5 +135,20 @@ public:
 	virtual double Volume_LOC();
 	virtual bool IsInside_LOC(Vect v);
 };
-
+//-----------------------------------------------------
+class MrCylinder:public MrShape
+{
+public:
+	MrCylinder():MrShape(){};
+	MrCylinder(const MrObject &o):MrShape(o){};
+	// MrCylinder(Vec3  scl,Vec3  ang,Vec3  pos):MrShape(scl,ang,pos){};
+	MrCylinder(const Vec3& scl,const Vec3& ang,const Vec3& pos):MrShape(scl,ang,pos){std::cout<<"Created "<<ShapeType()<<std::endl;};
+	//some virtual functions: 
+	virtual const char* ShapeType(){return "Cylinder";}
+	//for output
+	virtual void Print();
+	//for calculations in LOCAL frame
+	virtual double Volume_LOC();
+	virtual bool IsInside_LOC(Vect v);
+};
 #endif

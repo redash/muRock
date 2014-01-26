@@ -46,16 +46,19 @@ MrShape::MrShape():M_g2l(1),M_l2g(1){
 	printf("Created shape#%d\n",id);
 }
 //---------------------------------------
-MrShape::MrShape(Vec3 scl,Vec3 ang,Vec3 pos)
+MrShape::MrShape(const Vec3& scl,const Vec3& ang,const Vec3& pos)
 :M_g2l(1),M_l2g(1)
 {
 	id=MaxId++;
-	printf("Created shape#%d\n",id);
+	cout<<"Create shape#"<<id<<endl;
+	cout<<"pos="<<pos<<endl;
+	cout<<"ang="<<ang<<endl;
+	cout<<"scl="<<scl<<endl;
 	UpdateM(pos,ang,scl);
 }
 //---------------------------------------
 MrShape::~MrShape(){
-	printf("Delete shape#%d\n",id);
+	cout<<"Delete shape#"<<id<<endl;
 }
 //---------------------------------------
 void MrShape::InitM(){
@@ -93,17 +96,11 @@ void MrShape::UpdateM(const Vec3 &pos,const Vec3 &ang,const Vec3 &scl){
 	Matr M_scl(1),M_rot(1),M_pos(1);
 
 	M_scl=glm::scale (M_scl,scl);
-	M_rot=glm::rotate(M_rot,ang[1],Vec3(0,1,0));
-	M_rot=glm::rotate(M_rot,ang[1],Vec3(0,1,0));
-	M_rot=glm::rotate(M_rot,ang[2],Vec3(0,0,1));
+	M_rot=glm::rotate(M_rot,ang[0],Vec3(1,0,0)); //psi
+	M_rot=glm::rotate(M_rot,ang[1],Vec3(0,1,0)); //theta
+	M_rot=glm::rotate(M_rot,ang[2],Vec3(0,0,1)); //phi
 	M_pos=glm::translate(M_pos,pos);
-	M_l2g=M_pos*M_rot*M_scl;
-	/*cout<<"scl="<<scl<<endl;
-	cout<<M_scl<<endl;
-	cout<<"rot="<<ang<<endl;
-	cout<<M_rot<<endl;
-	cout<<"pos="<<pos<<endl;
-	cout<<M_pos<<endl;*/
+	M_l2g=M_g2l*M_pos*M_rot*M_scl;
 	// update inverse matrix
 	M_rot=glm::transpose(M_rot);
 	for(int n=0;n<3;++n){
@@ -139,4 +136,15 @@ void MrSphere::Print(){
 //---------------------------------------
 double MrSphere::Volume_LOC(){return (4./3)*3.1415;}
 //---------------------------------------
-bool   MrSphere::IsInside_LOC(Vect v){	return (v[0]*v[0]+v[1]*v[1]+v[2]*v[2]<1.0);	}
+bool   MrSphere::IsInside_LOC(Vect v){	return (v[0]*v[0]+v[1]*v[1]+v[2]*v[2]<=1.0);	}
+
+//====================================================
+//            MrCylinder class:
+//====================================================
+void MrCylinder::Print(){
+	MrShape::Print();
+}
+//---------------------------------------
+double MrCylinder::Volume_LOC(){return 2.0*3.1415;}
+//---------------------------------------
+bool   MrCylinder::IsInside_LOC(Vect v){	return (v[0]*v[0]+v[1]*v[1]<=1.0)&&(fabs(v[2])<=1.0);	}
