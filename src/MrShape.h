@@ -4,33 +4,9 @@
 #include <cstring>
 #include <iostream>
 #include <map>
-#include <glm/glm.hpp> 
-//#include <glm/gtc/constants.hpp> 
-#include <glm/gtc/matrix_transform.hpp>
+#include "basic_types.h"
 
-
-
-typedef glm::vec3 Vec3;
-typedef glm::vec4 Vect;
-typedef glm::mat4 Matr;
-
-inline void RotateM(Matr M,float ang,Vec3 axis){M=glm::rotate(M,ang,axis);}
-inline void ScaleM (Matr M, Vec3 scl){M=glm::scale (M,scl);}
-inline void TranslateM(Matr M,Vec3 shift){M=glm::translate(M,shift);}
-inline float DeterM3(Matr M){
-	return 	 M[0][0]*M[1][1]*M[2][2]
-			+M[0][1]*M[1][2]*M[2][0]
-			+M[0][2]*M[1][0]*M[2][1]
-			-M[0][0]*M[1][2]*M[2][1]
-			-M[0][1]*M[1][0]*M[2][2]
-			-M[0][2]*M[1][1]*M[2][0];
-}
-
-std::ostream& operator<<(std::ostream& out, const Vec3& v); // output
-std::ostream& operator<<(std::ostream& out, const Vect& v); // output
-std::ostream& operator<<(std::ostream& out, const Matr& m); // output
-
-
+class MrRay;
 
 
 //------------------------------------------------------
@@ -82,9 +58,10 @@ public:
 	inline Vect l2g(const Vect& v){return M_l2g*v;}
 	inline Vect g2l(const Vect& v){return M_g2l*v;}
 	
-	// intersection checks
-	//virtual double Intersect(const Vect &v,Vect &ipoint,Vect &inormal);
-	
+	// intersection checks: fill crossing points in ray, 
+	// return number of crossing points
+	virtual int Intersect_LOC(MrRay & ray)=0;
+	int Intersect(MrRay & ray);
 	//some virtual functions: 
 	virtual const char* ShapeType(){return "Dummy";}
 	//for output
@@ -111,6 +88,10 @@ public:
 	MrBox(const MrObject &o):MrShape(o){std::cout<<"Created "<<ShapeType()<<std::endl;};
 	// MrBox(Vec3  scl,Vec3  ang,Vec3  pos):MrShape(scl,ang,pos){std::cout<<"Created "<<ShapeType()<<std::endl;};
 	MrBox(const Vec3& scl,const Vec3& ang,const Vec3& pos):MrShape(scl,ang,pos){std::cout<<"Created "<<ShapeType()<<std::endl;};
+	
+	// intersection checks: fill crossing points in ray, 
+	// return number of crossing points
+	virtual int Intersect_LOC(MrRay & ray){/*FIXME*/return 0;};
 	//some virtual functions: 
 	virtual const char *ShapeType(){return "Box";}
 	//for output
@@ -127,6 +108,10 @@ public:
 	MrSphere(const MrObject &o):MrShape(o){};
 	// MrSphere(Vec3  scl,Vec3  ang,Vec3  pos):MrShape(scl,ang,pos){};
 	MrSphere(const Vec3& scl,const Vec3& ang,const Vec3& pos):MrShape(scl,ang,pos){std::cout<<"Created "<<ShapeType()<<std::endl;};
+	// intersection checks: fill crossing points in ray, 
+	// return number of crossing points
+	virtual int Intersect_LOC(MrRay & ray);
+
 	//some virtual functions: 
 	virtual const char* ShapeType(){return "Sphere";}
 	//for output
@@ -143,6 +128,10 @@ public:
 	MrCylinder(const MrObject &o):MrShape(o){};
 	// MrCylinder(Vec3  scl,Vec3  ang,Vec3  pos):MrShape(scl,ang,pos){};
 	MrCylinder(const Vec3& scl,const Vec3& ang,const Vec3& pos):MrShape(scl,ang,pos){std::cout<<"Created "<<ShapeType()<<std::endl;};
+	// intersection checks: fill crossing points in ray, 
+	// return number of crossing points
+	virtual int Intersect_LOC(MrRay & ray){/*FIXME*/return 0;}
+
 	//some virtual functions: 
 	virtual const char* ShapeType(){return "Cylinder";}
 	//for output
