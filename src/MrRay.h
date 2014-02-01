@@ -33,7 +33,10 @@ public:
 	~MrRay();
 
 	//propagate to time t
-	Vect  R(double t);
+	Vect  R(float t);
+	float X(float t);
+	float Y(float t);
+	float Z(float t);
 	//getters
 	Vect &V() {return v;}
 	float V_2() {return v [0]*v [0]+v [1]*v [1]+v [2]*v [2];}

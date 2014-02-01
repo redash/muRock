@@ -52,7 +52,10 @@ void shape_test::Clear(){
 }
 //--------------------------------------------------------
 void shape_test::Print(){
-	cout<<"Hi! I am "<<Name<<endl;
+	cout<<"Hi! I am test "<<Name<<endl;
+	for(auto&& o : test_obj) {
+		o->Print();
+	}
 }
 //--------------------------------------------------------
 bool shape_test::TestMC(float lim,int Npt){
@@ -64,6 +67,14 @@ bool shape_test::TestMC(float lim,int Npt){
 	//open file for points
 	ofstream F;
 	F.open("shp.txt", std::ofstream::out);
+	F<<"LIM "<<-lim<<" "<<-lim<<" "<<-lim<<endl;
+	F<<"LIM "<< lim<<" "<<-lim<<" "<<-lim<<endl;
+	F<<"LIM "<< lim<<" "<< lim<<" "<<-lim<<endl;
+	F<<"LIM "<<-lim<<" "<< lim<<" "<<-lim<<endl;
+	F<<"LIM "<<-lim<<" "<<-lim<<" "<< lim<<endl;
+	F<<"LIM "<< lim<<" "<<-lim<<" "<< lim<<endl;
+	F<<"LIM "<< lim<<" "<< lim<<" "<< lim<<endl;
+	F<<"LIM "<<-lim<<" "<< lim<<" "<< lim<<endl;
 	//----------------------------------
 	for(int n=0;n<Npoints;++n){
 		//generate point
@@ -119,6 +130,14 @@ bool shape_test::TestLattice(float lim,int Npt){
 	//open file for points
 	ofstream F;
 	F.open("shp_lat.txt", std::ofstream::out);
+	F<<"LIM "<<-lim<<" "<<-lim<<" "<<-lim<<endl;
+	F<<"LIM "<< lim<<" "<<-lim<<" "<<-lim<<endl;
+	F<<"LIM "<< lim<<" "<< lim<<" "<<-lim<<endl;
+	F<<"LIM "<<-lim<<" "<< lim<<" "<<-lim<<endl;
+	F<<"LIM "<<-lim<<" "<<-lim<<" "<< lim<<endl;
+	F<<"LIM "<< lim<<" "<<-lim<<" "<< lim<<endl;
+	F<<"LIM "<< lim<<" "<< lim<<" "<< lim<<endl;
+	F<<"LIM "<<-lim<<" "<< lim<<" "<< lim<<endl;
 	//----------------------------------
 	float dx=2*lim/Npt; //step size
 	for(p[0]=-lim;p[0]<=lim;p[0]+=dx)
@@ -140,7 +159,7 @@ bool shape_test::TestLattice(float lim,int Npt){
 	auto V0=8.0*lim*lim*lim; //"world" volume
 	auto V_mc=(V0*nhits)/Npoints;	//MC estimated volume
 	
-	auto V_calc=0;
+	double V_calc=0;
 	for(auto&& o : test_obj)V_calc+=o->Volume();
 	auto hits_calc=V_calc*Npoints/V0;
 
@@ -167,11 +186,13 @@ bool shape_test::TestRays(float lim,int Npt){
 	cout<<"================== start RAY TEST ================== "<<endl;
 
 	Vect p(0,0,lim,1);
-	Vect v(0,0,-1,0);
+	Vect v(0.1,0.4,-1,0);
 	int nhits=0;
 	//open file for points
 	ofstream F;
 	F.open("shp_ray.txt", std::ofstream::out);
+	// F.precision(5);
+	// F.setf(std::ios::fixed,std:: ios::floatfield );
 	//----------------------------------
 	float dx=2*lim/Npt; //step size
 	//write limits
@@ -239,18 +260,18 @@ bool shape_test::TestUnit(){
 //--------------------------------------------------------
 bool shape_test::DoTest(){
 	
-	//return TestUnit() && TestMC() && TestLattice() && TestRays();
+	 // return TestUnit() && TestMC() && TestLattice() && TestRays();
 	return TestRays();
 }
 //--------------------------------------------------------
 int main(int argc,char** argv){
-	srand(time(NULL));
+	srand(time(NULL));	
 	cout.width(20);
 	cout<<std::setprecision(3)<<std::fixed;
 	shape_test Test("NewTest");
 	//рисуем зайчика
-/*	Test+=new MrCylinder(Vec3{ 10, 10, 20},Vec3{  0,90, 0},Vec3{  0, 0, 0} ); //тело
-	Test+=new MrSphere(Vec3{  8,  8,  8},Vec3{  0,90, 0},Vec3{ 15, 0, 8} ); //голова
+	Test+=new MrCylinder(Vec3{ 10, 10, 20},Vec3{  0,90, 0},Vec3{  0, 0, 0} ); //тело
+	Test+=new MrCylinder(Vec3{  8,  8,  8},Vec3{  0,90, 0},Vec3{ 15, 0, 8} ); //голова
 	Test+=new MrBox		(Vec3{  2,  4, 12},Vec3{ 15, 5, 0},Vec3{ 15,-6,16} ); //ушко левое
 	Test+=new MrBox		(Vec3{  2,  4, 12},Vec3{-15, 5, 0},Vec3{ 15, 6,16} ); //ушко правое 
 	Test+=new MrSphere	(Vec3{  5,  5, 5 },Vec3{  0, 0, 0},Vec3{-17, 0, 7} ); //хвостик
@@ -258,10 +279,12 @@ int main(int argc,char** argv){
 	Test+=new MrBox		(Vec3{  3,  3, 10},Vec3{  0, 0, 0},Vec3{ 12, 6,-8} ); //лапка правая передняя ;
 	Test+=new MrBox		(Vec3{  3,  3, 10},Vec3{  0, 0, 0},Vec3{-12,-6,-8} ); //лапка левая задняя ;
 	Test+=new MrBox		(Vec3{  3,  3, 10},Vec3{  0, 0, 0},Vec3{-12, 6,-8} ); //лапка правая задняя ;
-*/
-//	Test+=new MrSphere(Vec3{  100,  10,  10},Vec3{  0,  0, 45}, Vec3{  0, 0, 0} ); //X
+
+// Test+=new MrCylinder(Vec3{  20,  20,  20},Vec3{  0,  30, 30}, Vec3{  0, 0, 0} ); //X
 	//Test+=new MrSphere(Vec3{  40,  5,  5},Vec3{  0,  0, 0}, Vec3{  0, 20, 0} ); //Y
-	Test+=new MrSphere(Vec3(15,15,15), Vec3(  0, 0, 0) ,Vec3(0,0,0)   );  //cout<<"тело "<<endl;
+
+//spherical rabbit
+	/*Test+=new MrSphere(Vec3(15,15,15), Vec3(  0, 0, 0) ,Vec3(0,0,0)   );  //cout<<"тело "<<endl;
     Test+=new MrSphere(Vec3(10,10,10),    Vec3( 0,0,0) ,Vec3(0,0,20)  );  //cout<<"голова  "<<endl;
     Test+=new MrSphere(Vec3(3,3,3),    Vec3( 0,0,0) ,Vec3(0,-9,20)    );  //cout<<"носик  "<<endl;
     Test+=new MrSphere(Vec3(5,2,15),   Vec3(-10,-20, 0) ,Vec3(-10,0,30) );//cout<<"ушко левое  "<<endl;
@@ -271,6 +294,8 @@ int main(int argc,char** argv){
     Test+=new MrSphere(Vec3(4,4,10),   Vec3(55,15,15) ,Vec3(10,-10,10) );//cout<<"лапка правая передняя  "<<endl;
     Test+=new MrSphere(Vec3(5,5,7),   Vec3(-20, 0, 0) ,Vec3(-12,-12,-9) );//cout<<"лапка левая задняя  "<<endl;
     Test+=new MrSphere(Vec3(5,5,7),   Vec3(-20, 0, 0) ,Vec3(12,-12,-9) );//cout<<"лапка правая задняя  "<<endl;
+    */
+    Test.Print();
 	bool res=Test.DoTest();
 
 	return res?0:1;

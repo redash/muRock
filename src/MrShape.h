@@ -53,7 +53,7 @@ public:
 	void ScaleM(const Vec3& scale); //apply scaling
 	//apply scaling,rotation and shift
 	void UpdateM(const Vec3& scl,const Vec3& ang,const Vec3& pos);
-	void UpdateM(MrObject &o){UpdateM(o.Pos(),o.Ang(),o.Scl());}
+	void UpdateM(MrObject &o){UpdateM(o.Scl(),o.Ang(),o.Pos());}
 	// transformations
 	inline Vect l2g(const Vect& v){return M_l2g*v;}
 	inline Vect g2l(const Vect& v){return M_g2l*v;}
@@ -91,7 +91,7 @@ public:
 	
 	// intersection checks: fill crossing points in ray, 
 	// return number of crossing points
-	virtual int Intersect_LOC(MrRay & ray){/*FIXME*/return 0;};
+	virtual int Intersect_LOC(MrRay & ray);
 	//some virtual functions: 
 	virtual const char *ShapeType(){return "Box";}
 	//for output
@@ -130,10 +130,30 @@ public:
 	MrCylinder(const Vec3& scl,const Vec3& ang,const Vec3& pos):MrShape(scl,ang,pos){std::cout<<"Created "<<ShapeType()<<std::endl;};
 	// intersection checks: fill crossing points in ray, 
 	// return number of crossing points
-	virtual int Intersect_LOC(MrRay & ray){/*FIXME*/return 0;}
+	virtual int Intersect_LOC(MrRay & ray);
 
 	//some virtual functions: 
 	virtual const char* ShapeType(){return "Cylinder";}
+	//for output
+	virtual void Print();
+	//for calculations in LOCAL frame
+	virtual double Volume_LOC();
+	virtual bool IsInside_LOC(Vect v);
+};
+//-----------------------------------------------------
+class MrPyramid:public MrShape
+{
+public:
+	MrPyramid():MrShape(){};
+	MrPyramid(const MrObject &o):MrShape(o){};
+	// MrPyramid(Vec3  scl,Vec3  ang,Vec3  pos):MrShape(scl,ang,pos){};
+	MrPyramid(const Vec3& scl,const Vec3& ang,const Vec3& pos):MrShape(scl,ang,pos){std::cout<<"Created "<<ShapeType()<<std::endl;};
+	// intersection checks: fill crossing points in ray, 
+	// return number of crossing points
+	virtual int Intersect_LOC(MrRay & ray){/*FIXME*/return 0;}
+
+	//some virtual functions: 
+	virtual const char* ShapeType(){return "Pyramid";}
 	//for output
 	virtual void Print();
 	//for calculations in LOCAL frame
